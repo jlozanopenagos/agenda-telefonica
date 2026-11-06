@@ -21,7 +21,11 @@ public class Main {
         System.out.println(c3);
         System.out.println(c4);
         System.out.println(c5);
-        int isFull = agenda.freeSpaces();
-        System.out.println(isFull);
+        agenda.addContact(c1);
+        agenda.addContact(c2);
+        agenda.addContact(c3);
+        agenda.addContact(c4);
+        //agenda.addContact(c5);
+        System.out.println(agenda);
     }
 }
