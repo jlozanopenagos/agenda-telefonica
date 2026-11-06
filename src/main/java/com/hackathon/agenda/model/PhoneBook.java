@@ -81,10 +81,34 @@ public class PhoneBook {
         return true;
     }
 
-    //updatePhone(String firstName, String lastName, String phoneNumber){}
+    public void updatePhone(String firstName, String lastName, String newPhoneNumber) {
+        if (firstName == null || lastName == null) {
+            throw new IllegalArgumentException("El nombre y apellido no pueden ser nulos.");
+        }
+        if (firstName.isBlank() || lastName.isBlank()) {
+            throw new IllegalArgumentException("El nombre y apellido no pueden estar en blanco.");
+        }
 
-    //listContacts(){]
+        for (Contact contact : contacts) {
+            if (firstName.equalsIgnoreCase(contact.getFirstName()) && lastName.equalsIgnoreCase(contact.getLastName())) {
+                contact.setPhoneNumber(newPhoneNumber); // El setter valida el Regex automáticamente
+                return;
+            }
+        }
+        throw new NoSuchElementException("No se puede modificar: el contacto no existe.");
+    }
 
+    public List<Contact> listContacts() {
+        List<Contact> sortedList = new ArrayList<>(this.contacts);
+        sortedList.sort((c1, c2) -> {
+            int comp = c1.getFirstName().compareToIgnoreCase(c2.getFirstName());
+            if (comp == 0) {
+                return c1.getLastName().compareToIgnoreCase(c2.getLastName());
+            }
+            return comp;
+        });
+        return sortedList;
+    }
 
     @Override
     public String toString() {
