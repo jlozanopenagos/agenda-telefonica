@@ -1,38 +1,25 @@
 package com.hackathon.agenda;
 
-import com.hackathon.agenda.model.Contact;
+import com.hackathon.agenda.controller.PhoneBookController;
 import com.hackathon.agenda.model.PhoneBook;
 import com.hackathon.agenda.view.MainFrame;
 
-import javax.swing.*;
+import javax.swing.SwingUtilities;
 
 public class Main {
-    public static void main(String[] args){
-        // Instancia de la agenda con capacidad por defecto (10 contactos)
-        PhoneBook agenda = new PhoneBook();
-
-        // 5 instancias de Contacto para pruebas
-        Contact c1 = new Contact("Carlos", "Santana", "600111222");
-        Contact c2 = new Contact("Ana", "Gomez", "+34 600 333 444");
-        Contact c3 = new Contact("Beatriz", "Pinzon", "600555666");
-        Contact c4 = new Contact("David", "Ospina", "+57 300 777 8888");
-        Contact c5 = new Contact("carlos", "santana", "600999888");
-
-        System.out.println("Instancias creadas correctamente:");
-        System.out.println(c1);
-        System.out.println(c2);
-        System.out.println(c3);
-        System.out.println(c4);
-        System.out.println(c5);
-        agenda.addContact(c1);
-        agenda.addContact(c2);
-        agenda.addContact(c3);
-        agenda.addContact(c4);
-        //agenda.addContact(c5);
-        System.out.println(agenda);
-
+    public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            new MainFrame().setVisible(true);
+            // 1. Instanciamos el Modelo
+            PhoneBook model = new PhoneBook();
+
+            // 2. Instanciamos la Vista
+            MainFrame view = new MainFrame();
+
+            // 3. Conectamos ambos con el Controlador
+            new PhoneBookController(model, view);
+
+            // 4. Mostramos la ventana
+            view.setVisible(true);
         });
     }
 }

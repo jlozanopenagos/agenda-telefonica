@@ -1,10 +1,12 @@
 package com.hackathon.agenda.model;
 
+import com.hackathon.agenda.service.PhoneBookService;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-public class PhoneBook {
+public class PhoneBook implements PhoneBookService {
     private static final int DEFAULT_CAPACITY = 10;
 
     private final List<Contact> contacts;
@@ -24,20 +26,24 @@ public class PhoneBook {
         this.contacts = new ArrayList<>();
     }
 
+    @Override
     public boolean isFull(){
         return contacts.size() >= this.capacity;
     }
 
+    @Override
     public int freeSpaces(){
         return this.capacity - contacts.size();
     }
 
+    @Override
     public boolean hasContact(Contact c){
         if(c == null)
             return false;
         return this.contacts.contains(c);
     }
 
+    @Override
     public void addContact(Contact c){
         if(c == null)
             throw new IllegalArgumentException("El contacto a agregar no puede estar vacio");
@@ -51,6 +57,7 @@ public class PhoneBook {
         contacts.add(c);
     }
 
+    @Override
     public String searchContact(String firstName, String lastName){
         if( firstName == null || lastName == null)
             throw new IllegalArgumentException("El contacto a buscar no puede ser nullo");
@@ -65,6 +72,7 @@ public class PhoneBook {
         throw new NoSuchElementException("El contacto no se encontro en la agenda");
     }
 
+    @Override
     public boolean deleteContact(Contact c){
         if( c == null)
             throw new IllegalArgumentException("El contacto a buscar no puede ser nullo");
@@ -80,6 +88,7 @@ public class PhoneBook {
         return true;
     }
 
+    @Override
     public void updatePhone(String firstName, String lastName, String newPhoneNumber) {
         if (firstName == null || lastName == null) {
             throw new IllegalArgumentException("El nombre y apellido no pueden ser nulos.");
@@ -97,6 +106,7 @@ public class PhoneBook {
         throw new NoSuchElementException("No se puede modificar: el contacto no existe.");
     }
 
+    @Override
     public List<Contact> listContacts() {
         List<Contact> sortedList = new ArrayList<>(this.contacts);
         sortedList.sort((c1, c2) -> {
