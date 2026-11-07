@@ -2,6 +2,9 @@ package com.hackathon.agenda;
 
 import com.hackathon.agenda.model.Contact;
 import com.hackathon.agenda.model.PhoneBook;
+import com.hackathon.agenda.view.MainFrame;
+
+import javax.swing.*;
 
 public class Main {
     public static void main(String[] args){
@@ -27,5 +30,9 @@ public class Main {
         agenda.addContact(c4);
         //agenda.addContact(c5);
         System.out.println(agenda);
+
+        SwingUtilities.invokeLater(() -> {
+            new MainFrame().setVisible(true);
+        });
     }
 }
