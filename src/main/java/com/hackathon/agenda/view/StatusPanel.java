@@ -6,7 +6,7 @@ import java.awt.*;
 public class StatusPanel extends JPanel {
 
     private final JLabel lblStatus = new JLabel("Listo.");
-    private final JLabel lblFreeSpaces = new JLabel("Espacios libres: 10");
+    private final JLabel lblFreeSpaces = new JLabel("Espacios libres: -");
 
     public StatusPanel() {
         setLayout(new BorderLayout(10, 0));

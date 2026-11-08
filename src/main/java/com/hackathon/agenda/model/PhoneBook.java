@@ -60,19 +60,22 @@ public class PhoneBook implements PhoneBookService {
     @Override
     public String searchContact(String firstName, String lastName) {
         if (firstName == null || lastName == null) {
-            throw new IllegalArgumentException("El contacto a buscar no puede ser nulo.");
+            throw new IllegalArgumentException("El nombre y apellido no pueden ser nulos.");
         }
-        if (firstName.isBlank() || lastName.isBlank()) {
-            throw new IllegalArgumentException("El nombre y apellido del contacto a buscar no pueden estar en blanco.");
+        String fName = firstName.trim();
+        String lName = lastName.trim();
+
+        if (fName.isBlank() || lName.isBlank()) {
+            throw new IllegalArgumentException("El nombre y apellido no pueden estar vacíos.");
         }
 
         for (Contact contact : contacts) {
-            if (firstName.trim().equalsIgnoreCase(contact.getFirstName()) &&
-                    lastName.trim().equalsIgnoreCase(contact.getLastName())) {
+            if (fName.equalsIgnoreCase(contact.getFirstName()) &&
+                    lName.equalsIgnoreCase(contact.getLastName())) {
                 return contact.getPhoneNumber();
             }
         }
-        throw new NoSuchElementException("El contacto no se encontró en la agenda.");
+        throw new NoSuchElementException("Contacto no encontrado en la agenda.");
     }
 
     @Override
@@ -93,13 +96,25 @@ public class PhoneBook implements PhoneBookService {
 
     @Override
     public boolean deleteContact(String firstName, String lastName) {
-        if (firstName == null || lastName == null || firstName.isBlank() || lastName.isBlank()) {
-            throw new IllegalArgumentException("Nombre y apellido obligatorios para eliminar.");
+        if (firstName == null || lastName == null) {
+            throw new IllegalArgumentException("El nombre y apellido no pueden ser nulos.");
         }
-        return contacts.removeIf(c ->
-                c.getFirstName().equalsIgnoreCase(firstName) &&
-                        c.getLastName().equalsIgnoreCase(lastName)
+        String fName = firstName.trim();
+        String lName = lastName.trim();
+
+        if (fName.isBlank() || lName.isBlank()) {
+            throw new IllegalArgumentException("El nombre y apellido no pueden estar en blanco.");
+        }
+
+        boolean removed = contacts.removeIf(c ->
+                c.getFirstName().equalsIgnoreCase(fName) &&
+                        c.getLastName().equalsIgnoreCase(lName)
         );
+
+        if (!removed) {
+            throw new NoSuchElementException("El contacto no existe en la agenda.");
+        }
+        return true;
     }
 
     @Override
