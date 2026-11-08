@@ -6,6 +6,7 @@ import com.hackathon.agenda.view.MainFrame;
 
 import javax.swing.JTable;
 import javax.swing.event.ListSelectionEvent;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 public class PhoneBookController {
@@ -52,6 +53,7 @@ public class PhoneBookController {
 
             refreshView();
             view.getFormPanel().clearForm();
+            view.getTablePanel().clearSelection();
             view.getStatusPanel().showMessage("Contacto agregado exitosamente.", true);
         } catch (IllegalArgumentException e) {
             view.getStatusPanel().showMessage(e.getMessage(), false);
@@ -60,19 +62,42 @@ public class PhoneBookController {
         }
     }
 
-    // 2. Buscar contacto por nombre y apellido
+    // 2. Buscar contacto por nombre y apellido O por numero de telefono
     private void handleSearchContact() {
         try {
             String firstName = view.getFormPanel().getFirstNameInput();
             String lastName = view.getFormPanel().getLastNameInput();
+            String phone = view.getFormPanel().getPhoneInput();
 
-            String phoneFound = model.searchContact(firstName, lastName);
-            view.getFormPanel().setFormValues(firstName, lastName, phoneFound);
-            view.getStatusPanel().showMessage("Contacto encontrado.", true);
+            // Escenario A: Búsqueda por fragmento o número de teléfono
+            if (firstName.isBlank() && lastName.isBlank() && !phone.isBlank()) {
+                List<Contact> matches = model.searchByPhone(phone);
+                view.getTablePanel().updateTable(matches);
+                view.getStatusPanel().showMessage("Se encontraron " + matches.size() + " coincidencia(s).", true);
+                return;
+            }
+
+            // Escenario B: Búsqueda exacta tradicional por Nombre y Apellido
+            if (!firstName.isBlank() && !lastName.isBlank()) {
+                String phoneFound = model.searchContact(firstName, lastName);
+                view.getFormPanel().setFormValues(firstName, lastName, phoneFound);
+                view.getStatusPanel().showMessage("Contacto localizado con éxito.", true);
+                return;
+            }
+
+            // Escenario C: Si todos los campos están vacíos, restablecer la vista completa
+            if (firstName.isBlank() && lastName.isBlank() && phone.isBlank()) {
+                refreshView();
+                view.getStatusPanel().showMessage("Mostrando lista completa de contactos.", true);
+                return;
+            }
+
+            throw new IllegalArgumentException("Ingresa Nombre y Apellido, o escribe un número en Teléfono para buscar.");
+
         } catch (IllegalArgumentException | NoSuchElementException e) {
             view.getStatusPanel().showMessage(e.getMessage(), false);
         } catch (Exception e) {
-            view.getStatusPanel().showMessage("Error al buscar: " + e.getMessage(), false);
+            view.getStatusPanel().showMessage("Error durante la búsqueda: " + e.getMessage(), false);
         }
     }
 
@@ -86,7 +111,7 @@ public class PhoneBookController {
             model.updatePhone(firstName, lastName, newPhone);
 
             refreshView();
-            view.getStatusPanel().showMessage("Teléfono actualizado correctamente.", true);
+            view.getStatusPanel().showMessage("Teléfono modificado exitosamente.", true);
         } catch (IllegalArgumentException | NoSuchElementException e) {
             view.getStatusPanel().showMessage(e.getMessage(), false);
         } catch (Exception e) {
@@ -100,20 +125,12 @@ public class PhoneBookController {
             String firstName = view.getFormPanel().getFirstNameInput();
             String lastName = view.getFormPanel().getLastNameInput();
 
-            if (firstName.isBlank() || lastName.isBlank()) {
-                throw new IllegalArgumentException("Indica el nombre y apellido a eliminar.");
-            }
-
-            boolean removed = model.deleteContact(firstName, lastName);
-            if (!removed) {
-                throw new NoSuchElementException("El contacto no existe en la agenda.");
-            }
+            model.deleteContact(firstName, lastName);
 
             refreshView();
             view.getFormPanel().clearForm();
             view.getTablePanel().clearSelection();
             view.getStatusPanel().showMessage("Contacto eliminado exitosamente.", true);
-
         } catch (IllegalArgumentException | NoSuchElementException e) {
             view.getStatusPanel().showMessage(e.getMessage(), false);
         } catch (Exception e) {
@@ -125,7 +142,7 @@ public class PhoneBookController {
     private void handleClearForm() {
         view.getFormPanel().clearForm();
         view.getTablePanel().clearSelection();
-        view.getStatusPanel().showMessage("Campos limpiados.", true);
+        view.getStatusPanel().showMessage("Formulario limpiado.", true);
     }
 
     // 6. Sincronización: transferir datos de la fila seleccionada al formulario

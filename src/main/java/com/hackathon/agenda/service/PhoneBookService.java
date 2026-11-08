@@ -9,6 +9,7 @@ public interface PhoneBookService {
     boolean hasContact(Contact c);
     List<Contact> listContacts();
     String searchContact(String firstName, String lastName);
+    List<Contact> searchByPhone(String phoneQuery);
     boolean deleteContact(Contact c);
     boolean deleteContact(String firstName, String lastName);
     void updatePhone(String firstName, String lastName, String newPhone);

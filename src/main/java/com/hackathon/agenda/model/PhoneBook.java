@@ -79,6 +79,32 @@ public class PhoneBook implements PhoneBookService {
     }
 
     @Override
+    public List<Contact> searchByPhone(String phoneQuery) {
+        if (phoneQuery == null) {
+            throw new IllegalArgumentException("El término de búsqueda no puede ser nulo.");
+        }
+
+        String queryClean = phoneQuery.replaceAll("[\\s-]", "").trim();
+        if (queryClean.isBlank()) {
+            throw new IllegalArgumentException("Ingresa al menos un dígito para buscar por teléfono.");
+        }
+
+        List<Contact> matches = new ArrayList<>();
+        for (Contact contact : contacts) {
+            String contactPhoneClean = contact.getPhoneNumber().replaceAll("[\\s-]", "");
+            if (contactPhoneClean.contains(queryClean)) {
+                matches.add(contact);
+            }
+        }
+
+        if (matches.isEmpty()) {
+            throw new NoSuchElementException("No se encontraron contactos con el número o fragmento: " + phoneQuery);
+        }
+
+        return matches;
+    }
+
+    @Override
     public boolean deleteContact(Contact c) {
         if (c == null) {
             throw new IllegalArgumentException("El contacto a eliminar no puede ser nulo.");
