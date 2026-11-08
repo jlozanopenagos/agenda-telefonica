@@ -31,8 +31,13 @@ public class PhoneBookController {
         view.getFormPanel().getBtnDelete().addActionListener(e -> handleDeleteContact());
         view.getFormPanel().getBtnClear().addActionListener(e -> handleClearForm());
 
-        // Escucha el evento de selección de filas en la tabla
-        view.getTablePanel().getTableContacts().getSelectionModel().addListSelectionListener(this::handleTableSelection);
+        // Listener de selección en tabla principal
+        view.getTablePanel().getTableContacts().getSelectionModel()
+                .addListSelectionListener(e -> handleTableSelection(e, view.getTablePanel().getTableContacts()));
+
+        // Listener de selección en tabla de resultados de búsqueda
+        view.getTablePanel().getTableSearchResults().getSelectionModel()
+                .addListSelectionListener(e -> handleTableSelection(e, view.getTablePanel().getTableSearchResults()));
     }
 
     // Refresca la tabla ordenada y los espacios disponibles
@@ -69,34 +74,40 @@ public class PhoneBookController {
             String lastName = view.getFormPanel().getLastNameInput();
             String phone = view.getFormPanel().getPhoneInput();
 
-            // Escenario A: Búsqueda por fragmento o número de teléfono
+            // 1. Búsqueda por número o fragmento de teléfono
             if (firstName.isBlank() && lastName.isBlank() && !phone.isBlank()) {
                 List<Contact> matches = model.searchByPhone(phone);
-                view.getTablePanel().updateTable(matches);
+                view.getTablePanel().updateSearchResults(matches);
                 view.getStatusPanel().showMessage("Se encontraron " + matches.size() + " coincidencia(s).", true);
                 return;
             }
 
-            // Escenario B: Búsqueda exacta tradicional por Nombre y Apellido
+            // 2. Búsqueda exacta por Nombre y Apellido
             if (!firstName.isBlank() && !lastName.isBlank()) {
                 String phoneFound = model.searchContact(firstName, lastName);
+                Contact found = new Contact(firstName, lastName, phoneFound);
+
+                // Muestra la coincidencia única en la tabla de resultados y en los campos
+                view.getTablePanel().updateSearchResults(List.of(found));
                 view.getFormPanel().setFormValues(firstName, lastName, phoneFound);
                 view.getStatusPanel().showMessage("Contacto localizado con éxito.", true);
                 return;
             }
 
-            // Escenario C: Si todos los campos están vacíos, restablecer la vista completa
+            // 3. Si todo está vacío, limpia la tabla de búsqueda
             if (firstName.isBlank() && lastName.isBlank() && phone.isBlank()) {
-                refreshView();
-                view.getStatusPanel().showMessage("Mostrando lista completa de contactos.", true);
+                view.getTablePanel().clearSearchResults();
+                view.getStatusPanel().showMessage("Búsqueda restablecida.", true);
                 return;
             }
 
             throw new IllegalArgumentException("Ingresa Nombre y Apellido, o escribe un número en Teléfono para buscar.");
 
         } catch (IllegalArgumentException | NoSuchElementException e) {
+            view.getTablePanel().clearSearchResults();
             view.getStatusPanel().showMessage(e.getMessage(), false);
         } catch (Exception e) {
+            view.getTablePanel().clearSearchResults();
             view.getStatusPanel().showMessage("Error durante la búsqueda: " + e.getMessage(), false);
         }
     }
@@ -142,19 +153,18 @@ public class PhoneBookController {
     private void handleClearForm() {
         view.getFormPanel().clearForm();
         view.getTablePanel().clearSelection();
-        view.getStatusPanel().showMessage("Formulario limpiado.", true);
+        view.getTablePanel().clearSearchResults(); // Limpia la tabla de búsqueda
+        view.getStatusPanel().showMessage("Formulario y resultados limpiados.", true);
     }
 
     // 6. Sincronización: transferir datos de la fila seleccionada al formulario
-    private void handleTableSelection(ListSelectionEvent event) {
+    private void handleTableSelection(ListSelectionEvent event, JTable sourceTable) {
         if (!event.getValueIsAdjusting()) {
-            JTable table = view.getTablePanel().getTableContacts();
-            int selectedRow = table.getSelectedRow();
-
+            int selectedRow = sourceTable.getSelectedRow();
             if (selectedRow != -1) {
-                String firstName = String.valueOf(table.getValueAt(selectedRow, 0));
-                String lastName = String.valueOf(table.getValueAt(selectedRow, 1));
-                String phone = String.valueOf(table.getValueAt(selectedRow, 2));
+                String firstName = String.valueOf(sourceTable.getValueAt(selectedRow, 0));
+                String lastName = String.valueOf(sourceTable.getValueAt(selectedRow, 1));
+                String phone = String.valueOf(sourceTable.getValueAt(selectedRow, 2));
 
                 view.getFormPanel().setFormValues(firstName, lastName, phone);
             }
