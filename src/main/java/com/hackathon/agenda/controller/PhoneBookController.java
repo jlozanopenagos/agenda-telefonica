@@ -99,17 +99,21 @@ public class PhoneBookController {
         try {
             String firstName = view.getFormPanel().getFirstNameInput();
             String lastName = view.getFormPanel().getLastNameInput();
-            String phone = view.getFormPanel().getPhoneInput();
 
-            // Contacto de referencia para la comparación con equals()
-            Contact contactToDelete = new Contact(firstName, lastName, phone.isEmpty() ? "600000000" : phone);
+            if (firstName.isBlank() || lastName.isBlank()) {
+                throw new IllegalArgumentException("Indica el nombre y apellido a eliminar.");
+            }
 
-            model.deleteContact(contactToDelete);
+            boolean removed = model.deleteContact(firstName, lastName);
+            if (!removed) {
+                throw new NoSuchElementException("El contacto no existe en la agenda.");
+            }
 
             refreshView();
             view.getFormPanel().clearForm();
             view.getTablePanel().clearSelection();
             view.getStatusPanel().showMessage("Contacto eliminado exitosamente.", true);
+
         } catch (IllegalArgumentException | NoSuchElementException e) {
             view.getStatusPanel().showMessage(e.getMessage(), false);
         } catch (Exception e) {

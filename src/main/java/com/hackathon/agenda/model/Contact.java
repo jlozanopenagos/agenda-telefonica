@@ -25,10 +25,17 @@ public class Contact {
     }
 
     public static boolean isValidPhoneNumber(String phone) {
+        if (phone == null || phone.isBlank()) {
+            return false;
+        }
 
-        String regex = "^(\\d{9}|\\+\\d{1,3}(?: ?\\d+)+)$";
+        // 1. Quitar espacios y guiones para validar los dígitos reales
+        String normalized = phone.replaceAll("[\\s-]", "");
 
-        return phone != null && phone.matches(regex);
+        // 2. Regex limpia: prefijo opcional '+' con 1 a 3 dígitos, seguido de 7 a 14 dígitos base
+        String regex = "^(\\+\\d{1,3})?\\d{7,14}$";
+
+        return normalized.matches(regex);
     }
 
     public String getFirstName() {
