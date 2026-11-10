@@ -1,5 +1,7 @@
 package com.hackathon.agenda.view;
 
+import com.hackathon.agenda.utils.AppTheme;
+
 import java.awt.*;
 import javax.swing.*;
 
@@ -11,10 +13,12 @@ public class MainFrame extends JFrame {
 
     public MainFrame() {
         setTitle("Agenda Telefónica MVC");
-        setSize(750, 550);
+        setSize(850, 580);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout(10, 10));
+
+        getContentPane().setBackground(AppTheme.BACKGROUND);
 
         // Inicializamos los 3 subpaneles
         formPanel = new FormPanel();

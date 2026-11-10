@@ -1,9 +1,11 @@
 package com.hackathon.agenda.view;
 
 import com.hackathon.agenda.model.Contact;
+import com.hackathon.agenda.utils.AppTheme;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import java.awt.*;
 import java.util.List;
 
@@ -18,38 +20,55 @@ public class TablePanel extends JPanel {
     private final JTable tableSearchResults;
 
     public TablePanel() {
-        // Disposición en dos columnas de igual tamaño con 10px de separación
-        setLayout(new GridLayout(1, 2, 10, 0));
-        setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
+        setLayout(new GridLayout(1, 2, 12, 0));
+        setBackground(AppTheme.BACKGROUND);
+        setBorder(BorderFactory.createEmptyBorder(0, 15, 0, 15));
 
         String[] columns = {"Nombre", "Apellido", "Teléfono"};
 
-        // Configuración tabla principal
+        // 1. Tabla Principal
         tableModel = new DefaultTableModel(columns, 0) {
             @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
+            public boolean isCellEditable(int row, int column) { return false; }
         };
         tableContacts = new JTable(tableModel);
-        tableContacts.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        styleTable(tableContacts);
         JScrollPane scrollMain = new JScrollPane(tableContacts);
+        scrollMain.setBackground(AppTheme.BACKGROUND);
+        scrollMain.getViewport().setBackground(Color.WHITE);
         scrollMain.setBorder(BorderFactory.createTitledBorder("Agenda Completa"));
 
-        // Configuración tabla de búsqueda
+        // 2. Tabla Secundaria (Búsqueda)
         searchTableModel = new DefaultTableModel(columns, 0) {
             @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
+            public boolean isCellEditable(int row, int column) { return false; }
         };
         tableSearchResults = new JTable(searchTableModel);
-        tableSearchResults.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        styleTable(tableSearchResults);
         JScrollPane scrollSearch = new JScrollPane(tableSearchResults);
+        scrollSearch.setBackground(AppTheme.BACKGROUND);
+        scrollSearch.getViewport().setBackground(Color.WHITE);
         scrollSearch.setBorder(BorderFactory.createTitledBorder("Resultados de Búsqueda"));
 
         add(scrollMain);
         add(scrollSearch);
+    }
+
+    private void styleTable(JTable table) {
+        table.setFont(AppTheme.MAIN_FONT);
+        table.setForeground(AppTheme.TEXT_DARK);
+        table.setRowHeight(26);
+        table.setShowGrid(false);
+        table.setIntercellSpacing(new Dimension(0, 2));
+        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        table.setSelectionBackground(new Color(219, 234, 254)); // Azul suave
+        table.setSelectionForeground(AppTheme.TEXT_DARK);
+
+        JTableHeader header = table.getTableHeader();
+        header.setFont(AppTheme.BOLD_FONT);
+        header.setBackground(new Color(241, 245, 249));
+        header.setForeground(AppTheme.TEXT_DARK);
+        header.setPreferredSize(new Dimension(0, 30));
     }
 
     // Métodos para la tabla principal

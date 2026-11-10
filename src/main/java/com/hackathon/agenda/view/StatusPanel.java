@@ -1,5 +1,7 @@
 package com.hackathon.agenda.view;
 
+import com.hackathon.agenda.utils.AppTheme;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -10,9 +12,12 @@ public class StatusPanel extends JPanel {
 
     public StatusPanel() {
         setLayout(new BorderLayout(10, 0));
-        setBorder(BorderFactory.createEmptyBorder(5, 12, 10, 12));
+        setBackground(AppTheme.BACKGROUND);
+        setBorder(BorderFactory.createEmptyBorder(10, 15, 12, 15));
 
-        lblStatus.setFont(lblStatus.getFont().deriveFont(Font.BOLD));
+        lblStatus.setFont(AppTheme.BOLD_FONT);
+        lblFreeSpaces.setFont(AppTheme.BOLD_FONT);
+        lblFreeSpaces.setForeground(AppTheme.TEXT_DARK);
 
         add(lblStatus, BorderLayout.WEST);
         add(lblFreeSpaces, BorderLayout.EAST);
